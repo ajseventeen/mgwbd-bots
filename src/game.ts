@@ -83,6 +83,7 @@ export abstract class GamePlayer<
   gameKey?: string;
   lastSeenMillis: number = 0;
   clientCode: string = 'AUTOUSER';
+  pollingInterval?: ReturnType<typeof setInterval>;
 
   async joinGame(gameKey: string, inPosition: number = 1) {
     this.gameKey = gameKey;
@@ -115,7 +116,7 @@ export abstract class GamePlayer<
       body: data
     });
     log(`Joined game with key: ${this.gameKey}`);
-    await this.checkStatus();
+    this.pollingInterval = setInterval(this.checkStatus.bind(this), 1000);
   }
 
   handleRequestBody(body: G) {
@@ -143,7 +144,6 @@ export abstract class GamePlayer<
     try {
       this.handleRequestBody(await response.json());
     } catch (e) { }
-    setTimeout(this.checkStatus.bind(this), 1000);
   }
 
   async sendMove() {
@@ -162,6 +162,10 @@ export abstract class GamePlayer<
       body: postData
     });
     log(`Sent move: ${move}`);
+  }
+
+  stopPolling() {
+    clearInterval(this.pollingInterval);
   }
 
   abstract getMove(): A;
