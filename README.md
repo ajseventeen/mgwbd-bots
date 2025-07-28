@@ -51,7 +51,8 @@ new cell.
 
 If you would like to create a heuristic player based on your own heuristic
 function, simply extend the `HeuristicGamePlayer` class and define `analyzeMove`
-according to the defined interface.
+according to the defined interface. See the existing
+[HeuristicSequenciumPlayer](./src/sequencium.ts#L118) for an example.
 
 ## Future Improvements
 
