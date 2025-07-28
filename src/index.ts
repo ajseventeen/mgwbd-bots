@@ -3,6 +3,7 @@ import readline from 'node:readline';
 import { RandomSequenciumPlayer } from './sequencium';
 import { Action, Game, GamePlayer, Player, Settings, State, getGameKey, getGameType } from './game';
 import { RandomPropheciesPlayer } from './prophecies';
+import { RandomNeighborsPlayer } from './neighbors';
 
 type AnyGamePlayer = GamePlayer<Game<Settings, State, Action>, Settings, State, Action>;
 const players: Record<string, Record<string, AnyGamePlayer>> = {
@@ -15,6 +16,9 @@ const players: Record<string, Record<string, AnyGamePlayer>> = {
   },
   prophecies: {
     random_player: new RandomPropheciesPlayer()
+  },
+  neighbors: {
+    random_player: new RandomNeighborsPlayer()
   }
 };
 

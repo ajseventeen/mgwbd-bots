@@ -33,7 +33,7 @@ export class RandomPropheciesPlayer extends RandomGamePlayer<PropheciesGame, Pro
   getAvailableMoves(): PropheciesAction[] {
     const playerIndex = this.getPlayerIndex();
     const grid = this.lastState?.grid;
-    if (!grid || !playerIndex) {
+    if (grid === undefined || playerIndex === undefined) {
       throw new Error('grid is not defined.');
     }
     const maxValue = Math.max(grid.length, grid[0].length);
