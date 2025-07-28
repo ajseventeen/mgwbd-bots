@@ -1,4 +1,4 @@
-import { Action, Game, GamePlayer, RandomGamePlayer, Settings, State } from "./game";
+import { Action, Game, GamePlayer, HeuristicGamePlayer, RandomGamePlayer, Settings, State } from "./game";
 import { chooseRandom, isNotNull } from "./util";
 
 export class SequenciumSettings extends Settings {
@@ -114,3 +114,9 @@ export class SequenciumState extends State<SequenciumAction> {
 export class SequenciumGame extends Game<SequenciumSettings, SequenciumState, SequenciumAction> {}
 
 export class RandomSequenciumPlayer extends RandomGamePlayer<SequenciumGame, SequenciumSettings, SequenciumState, SequenciumAction> { }
+
+export class HeuristicSequenciumPlayer extends HeuristicGamePlayer<SequenciumGame, SequenciumSettings, SequenciumState, SequenciumAction> {
+  analyzeMove(state: SequenciumState, move: SequenciumAction): number {
+    return state.grid[move.rowFrom][move.colFrom]?.value ?? -1;
+  }
+}

@@ -1,6 +1,6 @@
 import { DandelionsState, RandomFlowerDandelionsPlayer, RandomWindDandelionsPlayer } from './dandelions';
 import readline from 'node:readline';
-import { RandomSequenciumPlayer, SequenciumState } from './sequencium';
+import { HeuristicSequenciumPlayer, RandomSequenciumPlayer, SequenciumState } from './sequencium';
 import { Action, Game, GamePlayer, Player, Settings, State, getGameKey, getGameType } from './game';
 import { PropheciesState, RandomPropheciesPlayer } from './prophecies';
 import { NeighborsState, RandomNeighborsPlayer } from './neighbors';
@@ -10,7 +10,8 @@ import { RandomTurningPointPlayer, TurningPointState } from './turning-points';
 type AnyGamePlayer = GamePlayer<Game<Settings, State<Action>, Action>, Settings, State<Action>, Action>;
 const players: Record<string, Record<string, AnyGamePlayer>> = {
   sequencium: {
-    random_player: new RandomSequenciumPlayer(SequenciumState)
+    random_player: new RandomSequenciumPlayer(SequenciumState),
+    heuristic_player: new HeuristicSequenciumPlayer(SequenciumState)
   },
   dandelions: {
     random_wind_player: new RandomWindDandelionsPlayer(DandelionsState),
