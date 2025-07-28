@@ -2,6 +2,7 @@ import { RandomFlowerDandelionsPlayer, RandomWindDandelionsPlayer } from './dand
 import readline from 'node:readline';
 import { RandomSequenciumPlayer } from './sequencium';
 import { Action, Game, GamePlayer, Player, Settings, State, getGameKey, getGameType } from './game';
+import { RandomPropheciesPlayer } from './prophecies';
 
 type AnyGamePlayer = GamePlayer<Game<Settings, State, Action>, Settings, State, Action>;
 const players: Record<string, Record<string, AnyGamePlayer>> = {
@@ -11,6 +12,9 @@ const players: Record<string, Record<string, AnyGamePlayer>> = {
   dandelions: {
     random_wind_player: new RandomWindDandelionsPlayer(),
     random_flower_player: new RandomFlowerDandelionsPlayer()
+  },
+  prophecies: {
+    random_player: new RandomPropheciesPlayer()
   }
 };
 
@@ -48,7 +52,7 @@ function getPlayerType(gameKey: string, gameType: keyof typeof players) {
 What type of player would you like to use? `;
   const choices = players[gameType];
   const choiceKeys: (keyof typeof choices)[] = Object.keys(players[gameType]);
-  const choiceList = choiceKeys.map((key, index) => `[${index}] ${key}`).join('\n');
+  const choiceList = choiceKeys.map((key, index) => `[${index + 1}] ${key}`).join('\n');
   console.log(choiceList);
   rl.question(prompt, res => {
     const index = parseInt(res, 1) - 1;
