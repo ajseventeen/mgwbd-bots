@@ -206,6 +206,25 @@ export abstract class RandomGamePlayer<G extends Game<P, S, A>, P extends Settin
   }
 }
 
+export abstract class HeuristicGamePlayer<G extends Game<P, S, A>, P extends Settings, S extends State<A>, A extends Action> extends GamePlayer<G, P, S, A> {
+  abstract analyzeMove(state: S, move: A): number;
+
+  getMove(): A {
+    const state = this.lastState;
+    if (state === undefined) {
+      throw new Error('Game does not exist.');
+    }
+    const playerIndex = this.getPlayerIndex();
+    if (playerIndex === undefined) {
+      throw new Error('Player does not exist.');
+    }
+    const moves = state.getAvailableMoves(playerIndex);
+    const best = Math.max(...moves.map(move => this.analyzeMove(state, move)));
+    return chooseRandom(moves.filter(move => this.analyzeMove(state, move) === best));
+
+  }
+}
+
 export async function getGameType(gameKey: string): Promise<string> {
   const queryUrl = `${BASE_URL}/query?gameKey=${gameKey}&clientCode=${CLIENT_CODE}`;
   const response = await fetch(queryUrl);
