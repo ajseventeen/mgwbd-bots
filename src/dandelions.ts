@@ -53,9 +53,7 @@ export class FlowerDandelionsAction extends Action {
 
 type DandelionsAction = WindDandelionsAction | FlowerDandelionsAction;
 
-type DandelionsGame = Game<DandelionsSettings, DandelionsState, DandelionsAction>;
-
-// export class DandelionsGame extends Game<DandelionsSettings, DandelionsState, DandelionsAction> { }
+export class DandelionsGame extends Game<DandelionsSettings, DandelionsState, DandelionsAction> { }
 
 export class RandomWindDandelionsPlayer extends RandomGamePlayer<DandelionsGame, DandelionsSettings, DandelionsState, DandelionsAction> { }
 
