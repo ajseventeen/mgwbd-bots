@@ -6,6 +6,13 @@ export class PaperBoxingSettings extends Settings {
   width: number = 4;
 }
 
+export class PaperBoxingAction extends Action {
+  constructor(
+    public dir: Direction,
+    public playerIndex: number
+  ) { super(); }
+}
+
 class Cell {
   constructor(
     public value: number,
@@ -18,32 +25,16 @@ class Location {
   col: number = 0;
 }
 
-export class PaperBoxingState extends State {
+export class PaperBoxingState extends State<PaperBoxingAction> {
   grids: Cell[][][] = [];
   locations: Location[] = [];
   nextLocations: Location[] = [];
   ready: boolean[] = [];
-}
 
-export class PaperBoxingAction extends Action {
-  constructor(
-    public dir: Direction,
-    public playerIndex: number
-  ) { super(); }
-}
-
-export class PaperBoxingGame extends Game<PaperBoxingSettings, PaperBoxingState, PaperBoxingAction> { }
-
-export class RandomPaperBoxingPlayer extends RandomGamePlayer<PaperBoxingGame, PaperBoxingSettings, PaperBoxingState, PaperBoxingAction> {
-  getAvailableMoves(): PaperBoxingAction[] {
-    const playerIndex = this.getPlayerIndex();
-    const state = this.lastState;
-    if (playerIndex === undefined || state === undefined) {
-      throw new Error("No available moves!");
-    }
-    const grid = state.grids[playerIndex ?? 0];
+  getAvailableMoves(playerIndex: number): PaperBoxingAction[] {
+    const grid = this.grids[playerIndex ?? 0];
     return ALL_DIRECTIONS.filter(direction => {
-      const loc = state.locations[playerIndex];
+      const loc = this.locations[playerIndex];
       const target = {
         row: loc.row + (direction.includes('N') ? -1 :
                         direction.includes('S') ? 1 : 0),
@@ -59,7 +50,11 @@ export class RandomPaperBoxingPlayer extends RandomGamePlayer<PaperBoxingGame, P
       playerIndex
     }));
   }
+}
 
+export class PaperBoxingGame extends Game<PaperBoxingSettings, PaperBoxingState, PaperBoxingAction> { }
+
+export class RandomPaperBoxingPlayer extends RandomGamePlayer<PaperBoxingGame, PaperBoxingSettings, PaperBoxingState, PaperBoxingAction> {
   shouldMove(): boolean {
     const playerIndex = this.getPlayerIndex();
     return !!(this.lastState &&

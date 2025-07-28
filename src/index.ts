@@ -1,32 +1,32 @@
-import { RandomFlowerDandelionsPlayer, RandomWindDandelionsPlayer } from './dandelions';
+import { DandelionsState, RandomFlowerDandelionsPlayer, RandomWindDandelionsPlayer } from './dandelions';
 import readline from 'node:readline';
-import { RandomSequenciumPlayer } from './sequencium';
+import { RandomSequenciumPlayer, SequenciumState } from './sequencium';
 import { Action, Game, GamePlayer, Player, Settings, State, getGameKey, getGameType } from './game';
-import { RandomPropheciesPlayer } from './prophecies';
-import { RandomNeighborsPlayer } from './neighbors';
-import { RandomPaperBoxingPlayer } from './paper-boxing';
-import { RandomTurningPointPlayer } from './turning-points';
+import { PropheciesState, RandomPropheciesPlayer } from './prophecies';
+import { NeighborsState, RandomNeighborsPlayer } from './neighbors';
+import { PaperBoxingState, RandomPaperBoxingPlayer } from './paper-boxing';
+import { RandomTurningPointPlayer, TurningPointState } from './turning-points';
 
-type AnyGamePlayer = GamePlayer<Game<Settings, State, Action>, Settings, State, Action>;
+type AnyGamePlayer = GamePlayer<Game<Settings, State<Action>, Action>, Settings, State<Action>, Action>;
 const players: Record<string, Record<string, AnyGamePlayer>> = {
   sequencium: {
-    random_player: new RandomSequenciumPlayer()
+    random_player: new RandomSequenciumPlayer(SequenciumState)
   },
   dandelions: {
-    random_wind_player: new RandomWindDandelionsPlayer(),
-    random_flower_player: new RandomFlowerDandelionsPlayer()
+    random_wind_player: new RandomWindDandelionsPlayer(DandelionsState),
+    random_flower_player: new RandomFlowerDandelionsPlayer(DandelionsState)
   },
   prophecies: {
-    random_player: new RandomPropheciesPlayer()
+    random_player: new RandomPropheciesPlayer(PropheciesState)
   },
   neighbors: {
-    random_player: new RandomNeighborsPlayer()
+    random_player: new RandomNeighborsPlayer(NeighborsState)
   },
   'paper-boxing': {
-    random_player: new RandomPaperBoxingPlayer()
+    random_player: new RandomPaperBoxingPlayer(PaperBoxingState)
   },
   'turning-points': {
-    random_player: new RandomTurningPointPlayer()
+    random_player: new RandomTurningPointPlayer(TurningPointState)
   }
 };
 

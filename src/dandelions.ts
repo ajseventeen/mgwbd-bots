@@ -14,9 +14,31 @@ export class DandelionsSettings extends Settings {
   gridSize: string = '5by5';
 }
 
-export class DandelionsState extends State {
+export class DandelionsState extends State<DandelionsAction> {
   compass: { directions: Direction[] } = { directions: [] };
   grid: (string | null)[][] = [];
+
+  getAvailableMoves(playerIndex: number): DandelionsAction[] {
+    if (playerIndex === 0) {
+      let moves = this.grid.flatMap((row, r) => {
+        return row.map((val, c) => val ? null : [r, c]).filter(isNotNull);
+      }).filter(isNotNull);
+      if (!moves) {
+        throw new Error("No available moves!");
+      }
+      return moves.map(m => ({
+        grid: {
+          row: m[0],
+          col: m[1]
+        }
+      }));
+    } else if (playerIndex === 1) {
+      return ALL_DIRECTIONS.filter(d => !this.compass.directions.includes(d)).map(direction => ({
+        compass: direction
+      }));
+    }
+    throw new Error('Dandelions only supports two players.');
+  }
 }
 
 export class WindDandelionsAction extends Action {
@@ -31,29 +53,10 @@ export class FlowerDandelionsAction extends Action {
 
 type DandelionsAction = WindDandelionsAction | FlowerDandelionsAction;
 
-export class DandelionsGame extends Game<DandelionsSettings, DandelionsState, DandelionsAction> { }
+type DandelionsGame = Game<DandelionsSettings, DandelionsState, DandelionsAction>;
 
-export class RandomWindDandelionsPlayer extends RandomGamePlayer<DandelionsGame, DandelionsSettings, DandelionsState, DandelionsAction> {
-  getAvailableMoves(): DandelionsAction[] {
-    return ALL_DIRECTIONS.filter(d => !this.lastState?.compass.directions.includes(d)).map(direction => ({
-      compass: direction
-    }));
-  }
-}
+// export class DandelionsGame extends Game<DandelionsSettings, DandelionsState, DandelionsAction> { }
 
-export class RandomFlowerDandelionsPlayer extends RandomGamePlayer<DandelionsGame, DandelionsSettings, DandelionsState, DandelionsAction> {
-  getAvailableMoves(): DandelionsAction[] {
-    let moves = this.lastState?.grid.flatMap((row, r) => {
-      return row.map((val, c) => val ? null : [r, c]).filter(isNotNull);
-    }).filter(isNotNull);
-    if (!moves) {
-      throw new Error("No available moves!");
-    }
-    return moves.map(m => ({
-      grid: {
-        row: m[0],
-        col: m[1]
-      }
-    }));
-  }
-}
+export class RandomWindDandelionsPlayer extends RandomGamePlayer<DandelionsGame, DandelionsSettings, DandelionsState, DandelionsAction> { }
+
+export class RandomFlowerDandelionsPlayer extends RandomGamePlayer<DandelionsGame, DandelionsSettings, DandelionsState, DandelionsAction> { }

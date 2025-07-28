@@ -5,10 +5,6 @@ export class TurningPointSettings extends Settings {
   gridSize: string = '4x4';
 }
 
-export class TurningPointState extends State {
-  grid: Direction[][] = [];
-}
-
 export class TurningPointAction extends Action {
   constructor(
     public row: number,
@@ -17,17 +13,12 @@ export class TurningPointAction extends Action {
   ) { super(); }
 }
 
-export class TurningPointGame extends Game<TurningPointSettings, TurningPointState, TurningPointAction> {}
+export class TurningPointState extends State<TurningPointAction> {
+  grid: Direction[][] = [];
 
-export class RandomTurningPointPlayer extends RandomGamePlayer<TurningPointGame, TurningPointSettings, TurningPointState, TurningPointAction> {
-  getAvailableMoves(): TurningPointAction[] {
-    const playerIndex = this.getPlayerIndex();
-    const state = this.lastState;
-    if (playerIndex === undefined || state === undefined) {
-      throw new Error("No available moves!");
-    }
+  getAvailableMoves(playerIndex: number): TurningPointAction[] {
     return CARDINAL_DIRECTIONS.flatMap(direction => {
-      return state.grid.flatMap((row, r) => {
+      return this.grid.flatMap((row, r) => {
         return row.map((value, c) => {
           return (value === null) ? {
             row: r,
@@ -39,3 +30,7 @@ export class RandomTurningPointPlayer extends RandomGamePlayer<TurningPointGame,
     }).filter(isNotNull);
   }
 }
+
+export class TurningPointGame extends Game<TurningPointSettings, TurningPointState, TurningPointAction> { }
+
+export class RandomTurningPointPlayer extends RandomGamePlayer<TurningPointGame, TurningPointSettings, TurningPointState, TurningPointAction> { }

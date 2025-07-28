@@ -7,17 +7,6 @@ export class PropheciesSettings extends Settings {
   xProphecies: boolean = false;
 }
 
-class Cell {
-  constructor(
-    public owner: number,
-    public value: number,
-  ) {}
-}
-
-export class PropheciesState extends State {
-  grid: (Cell | null)[][] = [];
-}
-
 export class PropheciesAction extends Action {
   constructor(
     public col: number,
@@ -27,15 +16,18 @@ export class PropheciesAction extends Action {
   ) { super(); }
 }
 
-export class PropheciesGame extends Game<PropheciesSettings, PropheciesState, PropheciesAction> {}
+class Cell {
+  constructor(
+    public owner: number,
+    public value: number,
+  ) {}
+}
 
-export class RandomPropheciesPlayer extends RandomGamePlayer<PropheciesGame, PropheciesSettings, PropheciesState, PropheciesAction> {
-  getAvailableMoves(): PropheciesAction[] {
-    const playerIndex = this.getPlayerIndex();
-    const grid = this.lastState?.grid;
-    if (grid === undefined || playerIndex === undefined) {
-      throw new Error('grid is not defined.');
-    }
+export class PropheciesState extends State<PropheciesAction> {
+  grid: (Cell | null)[][] = [];
+
+  getAvailableMoves(playerIndex: number): PropheciesAction[] {
+    const grid = this.grid;
     const maxValue = Math.max(grid.length, grid[0].length);
     const partialMoves = grid.flatMap((row, r) => {
       return row.map((cell, c) => cell === null ? {
@@ -61,3 +53,7 @@ export class RandomPropheciesPlayer extends RandomGamePlayer<PropheciesGame, Pro
     });
   }
 }
+
+export class PropheciesGame extends Game<PropheciesSettings, PropheciesState, PropheciesAction> {}
+
+export class RandomPropheciesPlayer extends RandomGamePlayer<PropheciesGame, PropheciesSettings, PropheciesState, PropheciesAction> { }

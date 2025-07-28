@@ -39,9 +39,11 @@ export interface IState {
   lastMove: any;
 }
 
-export abstract class State implements IState {
+export abstract class State<A extends Action> implements IState {
   activePlayerIndex = null;
   lastMove = null;
+
+  abstract getAvailableMoves(playerIndex: number): A[];
 }
 
 export interface IAction { }
@@ -78,7 +80,7 @@ export abstract class Game<
 export abstract class GamePlayer<
   G extends Game<P, S, A>,
   P extends Settings,
-  S extends State,
+  S extends State<A>,
   A extends Action
 > {
   lastState?: S;
@@ -87,6 +89,10 @@ export abstract class GamePlayer<
   lastSeenMillis: number = 0;
   clientCode: string = CLIENT_CODE;
   pollingInterval?: ReturnType<typeof setInterval>;
+
+  constructor(
+    private createNewState: { new(): S }
+  ) { }
 
   async joinGame(gameKey: string, inPosition: number = 1) {
     this.gameKey = gameKey;
@@ -124,7 +130,8 @@ export abstract class GamePlayer<
 
   handleRequestBody(body: G) {
     this.lastSeenMillis = body.lastSeenMillis;
-    this.lastState = body.gameState;
+    this.lastState = new this.createNewState();
+    Object.assign(this.lastState, body.gameState);
     this.gameSettings = body.gameSettings;
 
     switch (body.gamePhase) {
@@ -185,11 +192,17 @@ export abstract class GamePlayer<
   abstract getMove(): A;
 }
 
-export abstract class RandomGamePlayer<G extends Game<P, S, A>, P extends Settings, S extends State, A extends Action> extends GamePlayer<G, P, S, A> {
-  abstract getAvailableMoves(): A[];
-
+export abstract class RandomGamePlayer<G extends Game<P, S, A>, P extends Settings, S extends State<A>, A extends Action> extends GamePlayer<G, P, S, A> {
   getMove(): A {
-    return chooseRandom(this.getAvailableMoves());
+    const state = this.lastState;
+    if (state === undefined) {
+      throw new Error('Game does not exist.');
+    }
+    const playerIndex = this.getPlayerIndex();
+    if (playerIndex === undefined) {
+      throw new Error('Player does not exist.');
+    }
+    return chooseRandom(state.getAvailableMoves(playerIndex));
   }
 }
 

@@ -6,26 +6,6 @@ export class SequenciumSettings extends Settings {
   gridSize: number = 6;
 }
 
-class Cell {
-  constructor(
-    public from: string,
-    public playerIndex: number,
-    public value: number
-  ) {}
-}
-
-export class SequenciumState extends State {
-  static Cell = class {
-    constructor(
-      public from: string,
-      public playerIndex: number,
-      public value: number
-    ) {}
-  }
-
-  grid: (Cell | null)[][] = [];
-}
-
 export class SequenciumAction extends Action {
   constructor(
     public colFrom: number,
@@ -36,15 +16,19 @@ export class SequenciumAction extends Action {
   ) { super(); }
 }
 
-export class SequenciumGame extends Game<SequenciumSettings, SequenciumState, SequenciumAction> {}
+class Cell {
+  constructor(
+    public from: string,
+    public playerIndex: number,
+    public value: number
+  ) {}
+}
 
-export class RandomSequenciumPlayer extends RandomGamePlayer<SequenciumGame, SequenciumSettings, SequenciumState, SequenciumAction> {
-  getAvailableMoves(): SequenciumAction[] {
-    const playerIndex = this.getPlayerIndex();
-    const grid = this.lastState?.grid;
-    if (!grid || !playerIndex) {
-      throw new Error('grid is not defined.');
-    }
+export class SequenciumState extends State<SequenciumAction> {
+  grid: (Cell | null)[][] = [];
+
+  getAvailableMoves(playerIndex: number) {
+    const grid = this.grid;
     const moves = grid.flatMap((row, r) => {
       return row
         .map((value, c) => ({value, c}))
@@ -54,7 +38,7 @@ export class RandomSequenciumPlayer extends RandomGamePlayer<SequenciumGame, Seq
                                                                                                 .map(item => [r, item.c]);
     });
     return moves.map(move => {
-      const source = this.getBestNeighbor(move);
+      const source = this.getBestNeighbor(move, playerIndex);
       return {
         rowFrom: source[0],
         colFrom: source[1],
@@ -66,7 +50,7 @@ export class RandomSequenciumPlayer extends RandomGamePlayer<SequenciumGame, Seq
   }
 
   getNeighborCoords(r: number, c: number): number[][] {
-    const grid = this.lastState?.grid;
+    const grid = this.grid;
     if (!grid) {
       throw new Error('grid is not defined.');
     }
@@ -102,20 +86,20 @@ export class RandomSequenciumPlayer extends RandomGamePlayer<SequenciumGame, Seq
   }
 
   neighborsOf(r: number, c: number): (Cell | null)[] {
-    const grid = this.lastState?.grid;
+    const grid = this.grid;
     if (!grid) {
       throw new Error('grid is not defined.');
     }
     return this.getNeighborCoords(r, c).map(pair => grid[pair[0]][pair[1]]);
   }
 
-  getBestNeighbor(move: number[]): number[] {
-    const grid = this.lastState?.grid;
+  getBestNeighbor(move: number[], playerIndex: number): number[] {
+    const grid = this.grid;
     if (!grid) {
       throw new Error('grid is not defined.');
     }
     return this.getNeighborCoords(move[0], move[1])
-      .filter(pair => grid[pair[0]][pair[1]]?.playerIndex === this.getPlayerIndex())
+      .filter(pair => grid[pair[0]][pair[1]]?.playerIndex === playerIndex)
       .reduce((prev, cur) => {
         if (prev.length === 0) {
           return cur;
@@ -126,3 +110,7 @@ export class RandomSequenciumPlayer extends RandomGamePlayer<SequenciumGame, Seq
       }, [])
   }
 }
+
+export class SequenciumGame extends Game<SequenciumSettings, SequenciumState, SequenciumAction> {}
+
+export class RandomSequenciumPlayer extends RandomGamePlayer<SequenciumGame, SequenciumSettings, SequenciumState, SequenciumAction> { }
