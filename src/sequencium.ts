@@ -1,4 +1,4 @@
-import { Action, Game, GamePlayer, Settings, State } from "./game";
+import { Action, Game, GamePlayer, RandomGamePlayer, Settings, State } from "./game";
 import { chooseRandom, isNotNull } from "./util";
 
 export class SequenciumSettings extends Settings {
@@ -38,8 +38,8 @@ export class SequenciumAction extends Action {
 
 export class SequenciumGame extends Game<SequenciumSettings, SequenciumState, SequenciumAction> {}
 
-export class RandomSequenciumPlayer extends GamePlayer<SequenciumGame, SequenciumSettings, SequenciumState, SequenciumAction> {
-  getMove(): SequenciumAction {
+export class RandomSequenciumPlayer extends RandomGamePlayer<SequenciumGame, SequenciumSettings, SequenciumState, SequenciumAction> {
+  getAvailableMoves(): SequenciumAction[] {
     const playerIndex = this.getPlayerIndex();
     const grid = this.lastState?.grid;
     if (!grid || !playerIndex) {
@@ -53,15 +53,16 @@ export class RandomSequenciumPlayer extends GamePlayer<SequenciumGame, Sequenciu
                                                                                                 .map(x => x.playerIndex).includes(playerIndex)))
                                                                                                 .map(item => [r, item.c]);
     });
-    const move = chooseRandom(moves);
-    const source = this.getBestNeighbor(move);
-    return {
-      rowFrom: source[0],
-      colFrom: source[1],
-      rowTo: move[0],
-      colTo: move[1],
-      playerIndex: playerIndex
-    };
+    return moves.map(move => {
+      const source = this.getBestNeighbor(move);
+      return {
+        rowFrom: source[0],
+        colFrom: source[1],
+        rowTo: move[0],
+        colTo: move[1],
+        playerIndex
+      }
+    });
   }
 
   getNeighborCoords(r: number, c: number): number[][] {

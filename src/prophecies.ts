@@ -1,4 +1,4 @@
-import { Action, Game, GamePlayer, Settings, State } from "./game";
+import { Action, Game, GamePlayer, RandomGamePlayer, Settings, State } from "./game";
 import { chooseRandom, isNotNull } from "./util";
 
 export class PropheciesSettings extends Settings {
@@ -29,8 +29,8 @@ export class PropheciesAction extends Action {
 
 export class PropheciesGame extends Game<PropheciesSettings, PropheciesState, PropheciesAction> {}
 
-export class RandomPropheciesPlayer extends GamePlayer<PropheciesGame, PropheciesSettings, PropheciesState, PropheciesAction> {
-  getMove(): PropheciesAction {
+export class RandomPropheciesPlayer extends RandomGamePlayer<PropheciesGame, PropheciesSettings, PropheciesState, PropheciesAction> {
+  getAvailableMoves(): PropheciesAction[] {
     const playerIndex = this.getPlayerIndex();
     const grid = this.lastState?.grid;
     if (!grid || !playerIndex) {
@@ -45,7 +45,7 @@ export class RandomPropheciesPlayer extends GamePlayer<PropheciesGame, Prophecie
       } : null)
       .filter(isNotNull);
     })
-    const moves = Array(maxValue + 1).fill(0).map((_, i) => i).flatMap(i => {
+    return Array(maxValue + 1).fill(0).map((_, i) => i).flatMap(i => {
       return partialMoves.map(move => ({
         ...move,
         value: i
@@ -59,6 +59,5 @@ export class RandomPropheciesPlayer extends GamePlayer<PropheciesGame, Prophecie
       }
       return true;
     });
-    return chooseRandom(moves);
   }
 }

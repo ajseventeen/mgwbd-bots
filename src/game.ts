@@ -1,4 +1,5 @@
 import https from 'https';
+import { chooseRandom } from './util';
 
 const log = console.log;
 
@@ -176,6 +177,14 @@ export abstract class GamePlayer<
   }
 
   abstract getMove(): A;
+}
+
+export abstract class RandomGamePlayer<G extends Game<P, S, A>, P extends Settings, S extends State, A extends Action> extends GamePlayer<G, P, S, A> {
+  abstract getAvailableMoves(): A[];
+
+  getMove(): A {
+    return chooseRandom(this.getAvailableMoves());
+  }
 }
 
 export async function getGameType(gameKey: string): Promise<string> {
