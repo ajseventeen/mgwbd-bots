@@ -106,7 +106,7 @@ export abstract class GamePlayer<
       playerType: 'human',
       owner: this.clientCode,
       name: 'Computer Player',
-      style: 'B'
+      style: 'C'
     }
 
     const data = JSON.stringify({
