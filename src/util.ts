@@ -10,6 +10,12 @@ export enum Direction {
 }
 
 export const ALL_DIRECTIONS = Object.values(Direction);
+export const CARDINAL_DIRECTIONS = [
+  Direction.NORTH,
+  Direction.EAST,
+  Direction.SOUTH,
+  Direction.WEST
+];
 
 export function isNotNull<T>(value: T): value is Exclude<T, null> {
   return value !== null;

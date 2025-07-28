@@ -5,6 +5,7 @@ import { Action, Game, GamePlayer, Player, Settings, State, getGameKey, getGameT
 import { RandomPropheciesPlayer } from './prophecies';
 import { RandomNeighborsPlayer } from './neighbors';
 import { RandomPaperBoxingPlayer } from './paper-boxing';
+import { RandomTurningPointPlayer } from './turning-points';
 
 type AnyGamePlayer = GamePlayer<Game<Settings, State, Action>, Settings, State, Action>;
 const players: Record<string, Record<string, AnyGamePlayer>> = {
@@ -23,6 +24,9 @@ const players: Record<string, Record<string, AnyGamePlayer>> = {
   },
   'paper-boxing': {
     random_player: new RandomPaperBoxingPlayer()
+  },
+  'turning-points': {
+    random_player: new RandomTurningPointPlayer()
   }
 };
 
