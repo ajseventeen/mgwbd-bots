@@ -4,6 +4,7 @@ import { RandomSequenciumPlayer } from './sequencium';
 import { Action, Game, GamePlayer, Player, Settings, State, getGameKey, getGameType } from './game';
 import { RandomPropheciesPlayer } from './prophecies';
 import { RandomNeighborsPlayer } from './neighbors';
+import { RandomPaperBoxingPlayer } from './paper-boxing';
 
 type AnyGamePlayer = GamePlayer<Game<Settings, State, Action>, Settings, State, Action>;
 const players: Record<string, Record<string, AnyGamePlayer>> = {
@@ -19,6 +20,9 @@ const players: Record<string, Record<string, AnyGamePlayer>> = {
   },
   neighbors: {
     random_player: new RandomNeighborsPlayer()
+  },
+  'paper-boxing': {
+    random_player: new RandomPaperBoxingPlayer()
   }
 };
 

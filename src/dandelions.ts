@@ -1,4 +1,5 @@
 import { Action, Game, GamePlayer, RandomGamePlayer, Settings, State } from "./game";
+import { ALL_DIRECTIONS, Direction } from "./util";
 
 function isNotNull<T>(value: T): value is Exclude<T, null> {
   return value !== null;
@@ -7,19 +8,6 @@ function isNotNull<T>(value: T): value is Exclude<T, null> {
 function chooseRandom<T>(values: T[]): T {
   return values[Math.floor(Math.random() * values.length)];
 }
-
-enum Direction {
-  NORTH = 'N',
-  NORTHEAST = 'NE',
-  EAST = 'E',
-  SOUTHEAST = 'SE',
-  SOUTH = 'S',
-  SOUTHWEST = 'SW',
-  WEST = 'W',
-  NORTHWEST = 'NW'
-}
-
-const ALL_DIRECTIONS = Object.values(Direction);
 
 export class DandelionsSettings extends Settings {
   doublePlanting: boolean = false;
