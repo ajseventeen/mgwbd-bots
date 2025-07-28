@@ -3,6 +3,7 @@ import https from 'https';
 const log = console.log;
 
 const BASE_URL = 'https://mathgameswithbaddrawings.com/api/gameplay';
+const CLIENT_CODE =  'AUTOUSER';
 
 enum GamePhase {
   SETUP = 1,
@@ -80,9 +81,10 @@ export abstract class GamePlayer<
   A extends Action
 > {
   lastState?: S;
+  gameSettings?: P;
   gameKey?: string;
   lastSeenMillis: number = 0;
-  clientCode: string = 'AUTOUSER';
+  clientCode: string = CLIENT_CODE;
   pollingInterval?: ReturnType<typeof setInterval>;
 
   async joinGame(gameKey: string, inPosition: number = 1) {
@@ -122,6 +124,7 @@ export abstract class GamePlayer<
   handleRequestBody(body: G) {
     this.lastSeenMillis = body.lastSeenMillis;
     this.lastState = body.gameState;
+    this.gameSettings = body.gameSettings;
 
     switch (body.gamePhase) {
       case GamePhase.SETUP:
@@ -161,13 +164,26 @@ export abstract class GamePlayer<
       },
       body: postData
     });
-    log(`Sent move: ${move}`);
+    log(`Sent move.`);
   }
 
   stopPolling() {
     clearInterval(this.pollingInterval);
   }
 
+  getPlayerIndex() {
+    return this.gameSettings?.players.map(p => p.owner).indexOf(this.clientCode);
+  }
+
   abstract getMove(): A;
 }
 
+export async function getGameType(gameKey: string): Promise<string> {
+  const queryUrl = `${BASE_URL}/query?gameKey=${gameKey}&clientCode=${CLIENT_CODE}`;
+  const response = await fetch(queryUrl);
+  return (await response.json()).gameType;
+}
+
+export function getGameKey(url: string): string {
+  return url.split('/')[4];
+}

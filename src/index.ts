@@ -1,5 +1,26 @@
-import { FlowerDandelionsGamePlayer, WindDandelionsGamePlayer } from './dandelions';
+import { RandomFlowerDandelionsPlayer, RandomWindDandelionsPlayer } from './dandelions';
 import readline from 'node:readline';
+import { RandomSequenciumPlayer } from './sequencium';
+import { Action, Game, GamePlayer, Player, Settings, State, getGameKey, getGameType } from './game';
+
+type AnyGamePlayer = GamePlayer<Game<Settings, State, Action>, Settings, State, Action>;
+const players: Record<string, Record<string, AnyGamePlayer>> = {
+  sequencium: {
+    random_player: new RandomSequenciumPlayer()
+  },
+  dandelions: {
+    random_wind_player: new RandomWindDandelionsPlayer(),
+    random_flower_player: new RandomFlowerDandelionsPlayer()
+  }
+};
+
+function parseInt(value: string, default_: number = 0) {
+  try {
+    return Number.parseInt(value);
+  } catch {
+    return default_;
+  }
+}
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -11,41 +32,33 @@ const MAIN_MENU = `
  MAIN MENU
 ===========
 
-What would you like to do?
-
-[c]onnect to a game
-
-Enter choice or 'q' to quit: `
-
-const CONNECT_MENU = `
-=========
- CONNECT
-=========
-
 Enter the game link: `
 
 const CONNECT_POSITION = `What position would you like to take? (default is 2): `
 
-function connect() {
-  rl.question(CONNECT_MENU, gameLink => {
-    const gameKey = gameLink.split('/')[4];
-    rl.question(CONNECT_POSITION, position => {
-      let pos: number;
-      try {
-        pos = Number.parseInt(position) - 1;
-      } catch {
-        pos = 1;
-      }
-      const player = pos === 0 ? new FlowerDandelionsGamePlayer() : new WindDandelionsGamePlayer();
-      player.joinGame(gameKey, pos);
-    });
+function startGame(gameKey: string, player: AnyGamePlayer) {
+  rl.question(CONNECT_POSITION, position => {
+    const pos = parseInt(position, 1) - 1;
+    player.joinGame(gameKey, pos);
   });
 }
 
-rl.question(MAIN_MENU, answer => {
-  switch (answer) {
-    case 'c':
-      connect();
-  }
+function getPlayerType(gameKey: string, gameType: keyof typeof players) {
+  const prompt = `
+What type of player would you like to use? `;
+  const choices = players[gameType];
+  const choiceKeys: (keyof typeof choices)[] = Object.keys(players[gameType]);
+  const choiceList = choiceKeys.map((key, index) => `[${index}] ${key}`).join('\n');
+  console.log(choiceList);
+  rl.question(prompt, res => {
+    const index = parseInt(res, 1) - 1;
+    const player = choices[choiceKeys[index]];
+    startGame(gameKey, player);
+  });
+}
+
+rl.question(MAIN_MENU, async answer => {
+  const gameKey = getGameKey(answer);
+  getPlayerType(gameKey, await getGameType(gameKey));
 })
 

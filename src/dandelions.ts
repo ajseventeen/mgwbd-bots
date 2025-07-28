@@ -45,7 +45,7 @@ type DandelionsAction = WindDandelionsAction | FlowerDandelionsAction;
 
 export class DandelionsGame extends Game<DandelionsSettings, DandelionsState, DandelionsAction> { }
 
-export class WindDandelionsGamePlayer extends GamePlayer<DandelionsGame, DandelionsSettings, DandelionsState, DandelionsAction> {
+export class RandomWindDandelionsPlayer extends GamePlayer<DandelionsGame, DandelionsSettings, DandelionsState, DandelionsAction> {
   getMove(): DandelionsAction {
     const availableMoves = ALL_DIRECTIONS.filter(d => !this.lastState?.compass.directions.includes(d))
     const move = availableMoves.splice(Math.floor(Math.random() * availableMoves.length), 1)[0];
@@ -55,7 +55,7 @@ export class WindDandelionsGamePlayer extends GamePlayer<DandelionsGame, Dandeli
   }
 }
 
-export class FlowerDandelionsGamePlayer extends GamePlayer<DandelionsGame, DandelionsSettings, DandelionsState, DandelionsAction> {
+export class RandomFlowerDandelionsPlayer extends GamePlayer<DandelionsGame, DandelionsSettings, DandelionsState, DandelionsAction> {
   getMove(): DandelionsAction {
     let moves = this.lastState?.grid.flatMap((row, r) => {
       return row.map((val, c) => val ? null : [r, c]).filter(isNotNull);
