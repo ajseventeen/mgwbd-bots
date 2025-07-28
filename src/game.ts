@@ -131,8 +131,7 @@ export abstract class GamePlayer<
       case GamePhase.SETUP:
         break;
       case GamePhase.PLAYING:
-        if (body.gameState.activePlayerIndex !== null &&
-            body.gameSettings.players[body.gameState.activePlayerIndex]?.owner === this.clientCode) {
+        if (this.shouldMove()) {
           log('It\'s my turn, thinking...');
           setTimeout(this.sendMove.bind(this), 1000);
         }
@@ -174,6 +173,13 @@ export abstract class GamePlayer<
 
   getPlayerIndex() {
     return this.gameSettings?.players.map(p => p.owner).indexOf(this.clientCode);
+  }
+
+  shouldMove(): boolean {
+    return !!(this.lastState &&
+              this.lastState.activePlayerIndex !== null &&
+              this.gameSettings &&
+              this.gameSettings.players[this.lastState.activePlayerIndex]?.owner === this.clientCode)
   }
 
   abstract getMove(): A;
