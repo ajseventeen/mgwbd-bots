@@ -8,6 +8,7 @@ import { PaperBoxingState, RandomPaperBoxingPlayer } from './paper-boxing';
 import { RandomTurningPointPlayer, TurningPointState } from './turning-points';
 
 type AnyGamePlayer = GamePlayer<Game<Settings, State<Action>, Action>, Settings, State<Action>, Action>;
+
 const players: Record<string, Record<string, AnyGamePlayer>> = {
   sequencium: {
     random_player: new RandomSequenciumPlayer(SequenciumState),
@@ -32,11 +33,16 @@ const players: Record<string, Record<string, AnyGamePlayer>> = {
 };
 
 function parseInt(value: string, default_: number = 0) {
+  let n: number;
   try {
-    return Number.parseInt(value);
+    n = Number.parseInt(value);
   } catch {
+    n = default_;
+  }
+  if (Number.isNaN(n)) {
     return default_;
   }
+  return n;
 }
 
 const rl = readline.createInterface({
@@ -55,7 +61,7 @@ const CONNECT_POSITION = `What position would you like to take? (default is 2): 
 
 function startGame(gameKey: string, player: AnyGamePlayer) {
   rl.question(CONNECT_POSITION, position => {
-    const pos = parseInt(position, 1) - 1;
+    const pos = parseInt(position, 2) - 1;
     player.joinGame(gameKey, pos);
   });
 }

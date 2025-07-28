@@ -34,6 +34,10 @@ export abstract class Settings implements ISettings {
   players: IPlayer[] = [];
 }
 
+export interface IAction { }
+
+export abstract class Action implements IAction { }
+
 export interface IState {
   activePlayerIndex: number | null;
   lastMove: any;
@@ -45,10 +49,6 @@ export abstract class State<A extends Action> implements IState {
 
   abstract getAvailableMoves(playerIndex: number): A[];
 }
-
-export interface IAction { }
-
-export abstract class Action implements IAction { }
 
 export interface IGame<
   P extends ISettings,
